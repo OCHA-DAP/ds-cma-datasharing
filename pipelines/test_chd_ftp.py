@@ -1,6 +1,7 @@
 import os
 import ssl
 from ftplib import FTP_TLS
+from urllib.request import urlopen
 
 HOST = "waws-prod-bn1-055.ftp.azurewebsites.windows.net"
 USER = r"DataScienceFTP\ocha-chd-cma"
@@ -9,6 +10,9 @@ PASS = os.getenv("FTP_PASSWORD")
 LOCAL = "test.txt"
 REMOTE_DIR = "/site/wwwroot/files"
 REMOTE_NAME = "test.txt"
+
+public_ip = urlopen("https://api.ipify.org").read().decode()
+print("Public IP:", public_ip)
 
 # Create the TLS context
 ctx = ssl.create_default_context()
