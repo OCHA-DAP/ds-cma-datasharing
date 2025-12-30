@@ -9,10 +9,10 @@ pwd = os.environ["FTP_PASS"]
 ftp = FTP(host)
 ftp.login(user=user, passwd=pwd)
 
-print("✅ Connected to:", host)
-print("📁 Current directory:", ftp.pwd())
+print("Connected to:", host)
+print("Current directory:", ftp.pwd())
 
-print("📄 Top-level files and folders:")
+print("Top-level files and folders:")
 for name in ftp.nlst():
     print(" -", name)
 
