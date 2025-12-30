@@ -1,8 +1,12 @@
 import os
 import socket
 from ftplib import FTP
+from urllib.request import urlopen
 
 # from ftplib import FTP_TLS
+
+public_ip = urlopen("https://api.ipify.org").read().decode()
+print("Public IP:", public_ip)
 
 host = os.environ["FTP_HOST"]
 user = os.environ["FTP_USER"]
@@ -30,9 +34,11 @@ if ftp_banner is None:
     print("Aborting: no FTP server detected at this IP.")
     exit(1)
 
-# Connect to plain FTP (no TLS)
-ftp = FTP(host)
-ftp.login(user=user, passwd=pwd)
+ftp = FTP()
+ftp.set_debuglevel(2)  # Shows command trace
+ftp.connect(host, 21, timeout=10)
+ftp.login(user, pwd)
+print("Login successful")
 
 # ftp = FTP_TLS()
 # ftp.connect(host, 21)
