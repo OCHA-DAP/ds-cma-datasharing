@@ -6,4 +6,4 @@ REM Install dependencies
 py -3 -m pip install -r D:\home\site\wwwroot\requirements.txt
 
 REM Run the script
-py -3 D:\home\site\wwwroot\pipelines\test_chd_ftp.py
+py -3 D:\home\site\wwwroot\pipelines\test_sftp.py
