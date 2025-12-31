@@ -21,7 +21,7 @@ def check_sftp_port(ip, port=22, timeout=5):
             print(f"SFTP port {port} on {ip} is open.")
             return True
     except Exception as e:
-        print(f"Error connecting to {ip}:{port} → {e}")
+        print(f"Error connecting to {ip}:{port} -> {e}")
         return False
 
 
