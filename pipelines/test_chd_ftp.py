@@ -12,9 +12,6 @@ host = os.environ["FTP_HOST"]
 user = os.environ["FTP_USER"]
 pwd = os.environ["FTP_PASS"]
 
-print(f"User: {repr(user)}")
-print(f"Pass: {repr(pwd)}")
-
 
 def check_ftp_banner(ip, port=21, timeout=5):
     try:
