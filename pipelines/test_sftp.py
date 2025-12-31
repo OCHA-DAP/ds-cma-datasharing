@@ -34,15 +34,23 @@ def check_sftp_port(ip, port=22, timeout=5):
     return False
 
 
-# Check if the SFTP service is open
-# def check_sftp_port(ip, port=22, timeout=5):
-#     try:
-#         with socket.create_connection((ip, port), timeout=timeout):
-#             print(f"SFTP port {port} on {ip} is open.")
-#             return True
-#     except Exception as e:
-#         print(f"Error connecting to {ip}:{port} -> {e}")
-#         return False
+def scan_for_sftp(ip, ports=[22, 2222, 9922, 8022, 10022], timeout=3):
+    print(f"Scanning {ip} for open SFTP ports...")
+    for port in ports:
+        try:
+            with socket.create_connection((ip, port), timeout=timeout) as sock:
+                banner = (
+                    sock.recv(1024).decode("utf-8", errors="ignore").strip()
+                )
+                if banner.startswith("SSH-"):
+                    print(f"✅ Port {port} → SSH banner received: {banner}")
+                else:
+                    print(f"⚠️ Port {port} → Non-SSH banner: {banner}")
+        except Exception as e:
+            print(f"Port {port} → Failed: {e}")
+
+
+scan_for_sftp(host)
 
 
 if not check_sftp_port(host, port):
