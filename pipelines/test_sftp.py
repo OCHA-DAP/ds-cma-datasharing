@@ -1,5 +1,6 @@
 import os
 import socket
+import time
 from urllib.request import urlopen
 
 import paramiko
@@ -14,15 +15,34 @@ pwd = os.environ["FTP_PASS"]
 port = 22  # SFTP default
 
 
-# Check if the SFTP service is open
 def check_sftp_port(ip, port=22, timeout=5):
+    print(f"Trying to connect to {ip}:{port} with timeout {timeout}...")
+    start = time.time()
     try:
-        with socket.create_connection((ip, port), timeout=timeout):
-            print(f"SFTP port {port} on {ip} is open.")
+        with socket.create_connection((ip, port), timeout=timeout) as sock:
+            duration = time.time() - start
+            print(f"Connected successfully in {duration:.2f} seconds.")
+            print("Socket family:", sock.family)
+            print("Socket type:", sock.type)
+            print("Socket proto:", sock.proto)
+            print("Peer name:", sock.getpeername())
             return True
-    except Exception as e:
-        print(f"Error connecting to {ip}:{port} -> {e}")
-        return False
+    except socket.timeout:
+        print(f"Connection to {ip}:{port} timed out.")
+    except socket.error as e:
+        print(f"Socket error: {e}")
+    return False
+
+
+# Check if the SFTP service is open
+# def check_sftp_port(ip, port=22, timeout=5):
+#     try:
+#         with socket.create_connection((ip, port), timeout=timeout):
+#             print(f"SFTP port {port} on {ip} is open.")
+#             return True
+#     except Exception as e:
+#         print(f"Error connecting to {ip}:{port} -> {e}")
+#         return False
 
 
 if not check_sftp_port(host, port):
