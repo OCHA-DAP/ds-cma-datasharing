@@ -34,7 +34,11 @@ def check_sftp_port(ip, port=22, timeout=5):
     return False
 
 
-def scan_for_sftp(ip, ports=[22, 2222, 9922, 8022, 10022], timeout=3):
+def scan_for_sftp(
+    ip,
+    ports=[22, 2222, 9922, 8022, 10022, 2022, 2122, 2200, 22222, 10000],
+    timeout=3,
+):
     print(f"Scanning {ip} for open SFTP ports...")
     for port in ports:
         try:
@@ -43,11 +47,11 @@ def scan_for_sftp(ip, ports=[22, 2222, 9922, 8022, 10022], timeout=3):
                     sock.recv(1024).decode("utf-8", errors="ignore").strip()
                 )
                 if banner.startswith("SSH-"):
-                    print(f"✅ Port {port} → SSH banner received: {banner}")
+                    print(f"Port {port} -> SSH banner received: {banner}")
                 else:
-                    print(f"⚠️ Port {port} → Non-SSH banner: {banner}")
+                    print(f"Port {port} -> Non-SSH banner: {banner}")
         except Exception as e:
-            print(f"Port {port} → Failed: {e}")
+            print(f"Port {port} -> Failed: {e}")
 
 
 scan_for_sftp(host)
