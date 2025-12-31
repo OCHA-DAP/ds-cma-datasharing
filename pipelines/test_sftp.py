@@ -12,7 +12,7 @@ print("Public IP:", public_ip)
 host = os.environ["FTP_HOST"]
 user = os.environ["FTP_USER"]
 pwd = os.environ["FTP_PASS"]
-port = 21  # SFTP default
+port = int(os.environ["FTP_PORT"])
 
 
 def check_sftp_port(ip, port=22, timeout=5):
