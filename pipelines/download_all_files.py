@@ -1,6 +1,8 @@
 import mimetypes
 import os
 import stat
+import sys
+import time
 import warnings
 from urllib.request import urlopen
 
@@ -59,6 +61,14 @@ def upload_blob(container_client, blob_path, local_path):
         print("Uploaded:", blob_path, "| Content-Type:", content_type)
 
 
+def list_sftp_tree(sftp, path, indent=0):
+    for item in sftp.listdir_attr(path):
+        item_path = os.path.join(path, item.filename).replace("\\", "/")
+        print("  " * indent + "- " + item.filename)
+        if stat_is_dir(item.st_mode):
+            list_sftp_tree(sftp, item_path, indent + 1)
+
+
 def download_and_upload_dir(
     sftp, container_client, remote_path, local_dir="temp"
 ):
@@ -91,11 +101,17 @@ def stat_is_dir(st_mode):
 
 
 if __name__ == "__main__":
+    sys.stdout.flush()  # Flush previous log noise
+    time.sleep(2)
     print("=== Starting download_all_files.py pipeline ===")
     print("Public IP:", urlopen("https://api.ipify.org").read().decode())
 
     sftp, transport = connect_sftp()
     container_client = connect_blob()
+
+    print("\n--- Remote SFTP directory listing ---")
+    list_sftp_tree(sftp, "/")
+    print("--- End of directory listing ---\n")
 
     download_and_upload_dir(sftp, container_client, "/")
 
