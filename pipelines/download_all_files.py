@@ -1,3 +1,4 @@
+import mimetypes
 import os
 import stat
 import warnings
@@ -41,14 +42,17 @@ def connect_blob():
 
 def upload_blob(container_client, blob_path, local_path):
     with open(local_path, "rb") as f:
-        content_type = "application/octet-stream"
+        # Infer content type from file extension
+        content_type, _ = mimetypes.guess_type(local_path)
+        if content_type is None:
+            content_type = "application/octet-stream"  # Fallback
         container_client.upload_blob(
             name=blob_path,
             data=f,
             overwrite=True,
             content_settings=ContentSettings(content_type=content_type),
         )
-        print("Uploaded:", blob_path)
+        print("Uploaded:", blob_path, "| Content-Type:", content_type)
 
 
 def download_and_upload_dir(
