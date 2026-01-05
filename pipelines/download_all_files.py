@@ -63,7 +63,7 @@ def download_and_upload_dir(
             sftp.get(item_path, local_file)
 
             blob_path = item_path.lstrip("/")
-            full_blob_path = f"cma_ftp/{blob_path}"
+            full_blob_path = f"ds-cma-datasharing/cma_ftp/{blob_path}"
             upload_blob(container_client, full_blob_path, local_file)
 
             os.remove(local_file)
