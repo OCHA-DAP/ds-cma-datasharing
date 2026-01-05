@@ -1,4 +1,5 @@
 import os
+import stat
 
 import paramiko
 
@@ -22,7 +23,7 @@ def list_all(path, indent=0):
 
     for item in items:
         item_path = os.path.join(path, item.filename).replace("\\", "/")
-        if paramiko.S_ISDIR(item.st_mode):
+        if stat.S_ISDIR(item.st_mode):
             print("  " * indent + f"[DIR]  {item.filename}/")
             list_all(item_path, indent + 1)
         else:
