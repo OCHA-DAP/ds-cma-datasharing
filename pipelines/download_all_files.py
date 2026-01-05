@@ -12,6 +12,10 @@ from cryptography.utils import CryptographyDeprecationWarning
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
 warnings.filterwarnings("ignore", category=CryptographyDeprecationWarning)
+warnings.filterwarnings(
+    "ignore", message="You are using cryptography on a 32-bit.*"
+)
+warnings.filterwarnings("ignore", message="Blowfish has been deprecated")
 
 # Config
 host = os.environ["FTP_HOST"]
