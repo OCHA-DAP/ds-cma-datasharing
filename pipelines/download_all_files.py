@@ -5,10 +5,12 @@ from urllib.request import urlopen
 
 import paramiko
 from azure.storage.blob import BlobServiceClient, ContentSettings
+from cryptography.utils import CryptographyDeprecationWarning
 
 # Suppress deprecation warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=CryptographyDeprecationWarning)
 
 # Config
 host = os.environ["FTP_HOST"]
@@ -74,6 +76,7 @@ def stat_is_dir(st_mode):
 
 
 if __name__ == "__main__":
+    print("=== Starting download_all_files.py pipeline ===")
     print("Public IP:", urlopen("https://api.ipify.org").read().decode())
 
     sftp, transport = connect_sftp()
@@ -84,4 +87,4 @@ if __name__ == "__main__":
 
     sftp.close()
     transport.close()
-    print("Done.")
+    print("=== Finished download_all_files.py pipeline ===")
