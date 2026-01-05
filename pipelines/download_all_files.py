@@ -27,6 +27,7 @@ def connect_sftp():
     transport = paramiko.Transport((host, port))
     transport.connect(username=username, password=password)
     sftp = paramiko.SFTPClient.from_transport(transport)
+    print("Connected to sftp server:", host)
     return sftp, transport
 
 
@@ -34,6 +35,7 @@ def connect_blob():
     blob_service_client = BlobServiceClient(
         account_url=account_url, credential=sas_token
     )
+    print("Connected to blob service:", account_url)
     return blob_service_client.get_container_client(container_name)
 
 
@@ -82,7 +84,6 @@ if __name__ == "__main__":
     sftp, transport = connect_sftp()
     container_client = connect_blob()
 
-    print("Connected. Downloading and uploading all files...")
     download_and_upload_dir(sftp, container_client, "/")
 
     sftp.close()
