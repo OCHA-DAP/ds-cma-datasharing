@@ -62,12 +62,17 @@ def download_and_upload_dir(
                 sftp, container_client, item_path, local_dir
             )
         else:
+            blob_path = item_path.lstrip("/")
+            full_blob_path = f"ds-cma-datasharing/cma_ftp/{blob_path}"
+            blob_client = container_client.get_blob_client(full_blob_path)
+            if blob_client.exists():
+                print("Skipping existing blob:", full_blob_path)
+                continue
+
             local_file = os.path.join(local_dir, item.filename)
             print("Downloading:", item_path)
             sftp.get(item_path, local_file)
 
-            blob_path = item_path.lstrip("/")
-            full_blob_path = f"ds-cma-datasharing/cma_ftp/{blob_path}"
             upload_blob(container_client, full_blob_path, local_file)
 
             os.remove(local_file)

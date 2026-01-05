@@ -49,5 +49,9 @@ da_plot = ds.isel(time=0)["PREC"]
 ```
 
 ```python
+da_plot
+```
+
+```python
 da_plot.where(da_plot >= 0).plot()
 ```
