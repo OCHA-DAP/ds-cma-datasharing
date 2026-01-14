@@ -91,11 +91,13 @@ def download_and_upload_dir(
             print("Downloading:", item_path)
             sftp.get(item_path, local_file)
 
-            upload_blob(container_client, full_blob_path, local_file)
-
-            os.remove(local_file)
-
-
+            try:
+                upload_blob(container_client, full_blob_path, local_file)
+            finally:
+                try:
+                    os.remove(local_file)
+                except OSError as e:
+                    print(f"Warning: Failed to delete temporary file {local_file}: {e}")
 def stat_is_dir(st_mode):
     return stat.S_ISDIR(st_mode)
 
