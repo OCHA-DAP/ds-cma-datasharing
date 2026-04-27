@@ -14,16 +14,17 @@ Output dimensions: (init_time=360, lead=6, lat=181, lon=360)
   - lat, lon: 1°×1° global grid
 
 Usage:
-    import adlfs, os, xarray as xr, rioxarray
+    import adlfs, os, zarr, xarray as xr
 
     fs = adlfs.AzureBlobFileSystem(
         account_name="imb0chd0dev",
         sas_token=os.environ["DSCI_AZ_BLOB_DEV_SAS_WRITE"],
     )
-    store = fs.get_mapper(
-        "projects/ds-cma-datasharing/processed/CMME_history.zarr"
+    store = zarr.storage.FsspecStore(
+        fs, path="projects/ds-cma-datasharing/processed/CMME_history.zarr"
     )
-    ds = xr.open_zarr(store)  # lazy — nothing loaded until computed
+    # lazy — nothing loaded until .compute()
+    ds = xr.open_zarr(store, consolidated=False)
 
     # All June initializations at lead 1:
     ds.sel(lead=1).isel(
@@ -137,37 +138,13 @@ def main():
         account_name=ACCOUNT_NAME,
         sas_token=sas_token.lstrip("?"),
     )
-    store = fs.get_mapper(f"{CONTAINER}/{OUTPUT_PATH}")
+    store = zarr.storage.FsspecStore(fs, path=f"{CONTAINER}/{OUTPUT_PATH}")
     chunked = combined.chunk(
         {"init_time": 12, "lead": 6, "lat": 181, "lon": 360}
     )
 
-    # Step 1: always write metadata + full-shape empty arrays (fast, no data)
-    # This ensures PREC has shape (360, ...) even on resume
-    print("Writing metadata and empty arrays ...")
-    chunked.to_zarr(store, compute=False, consolidated=False, mode="w")
-
-    # Step 2: write PREC data directly via zarr, one year at a time
-    prec_chunks_path = f"{CONTAINER}/{OUTPUT_PATH}/PREC/c"
-    try:
-        existing = {
-            p.split("/")[-1] for p in fs.ls(prec_chunks_path, detail=False)
-        }
-    except FileNotFoundError:
-        existing = set()
-
-    # Open without consolidated metadata so we see the freshly written schema
-    z = zarr.open(store, mode="r+", use_consolidated=False)
-    n, batch = len(combined.init_time), 12
-    for i in range(0, n, batch):
-        chunk_idx = str(i // batch)
-        year = int(combined.init_time[i].dt.year.item())
-        if chunk_idx in existing:
-            print(f"  {year}: already written, skipping")
-            continue
-        print(f"  {year}: writing ...")
-        data = combined["PREC"].isel(init_time=slice(i, i + batch)).values
-        z["PREC"][i : i + batch] = data  # noqa: E203
+    print("Writing zarr ...")
+    chunked.to_zarr(store, consolidated=False, mode="w")
 
     print("Consolidating metadata ...")
     zarr.consolidate_metadata(store)
