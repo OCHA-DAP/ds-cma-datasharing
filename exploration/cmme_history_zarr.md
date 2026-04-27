@@ -19,17 +19,25 @@ Monthly mean precipitation forecasts from the CMA CMME model, 1991–2020.
 
 ## Opening the dataset
 
+This store uses **zarr v3 format** (`zarr.json` metadata, not `.zmetadata`). Two things follow from that:
+
+- Use `zarr.storage.FsspecStore` instead of `fs.get_mapper()` — the latter returns a zarr v2-style mapper that zarr v3 doesn't read correctly.
+- Pass `consolidated=False` to `xr.open_zarr` — zarr v3 stores don't have consolidated metadata, so xarray must read each array's metadata individually.
+
 ```python
 import os
 import adlfs
 import xarray as xr
+import zarr
 
 fs = adlfs.AzureBlobFileSystem(
     account_name="imb0chd0dev",
     sas_token=os.environ["DSCI_AZ_BLOB_DEV_SAS_WRITE"],
 )
-store = fs.get_mapper("projects/ds-cma-datasharing/processed/CMME_history.zarr")
-ds = xr.open_zarr(store)  # lazy — nothing loaded until computed
+store = zarr.storage.FsspecStore(
+    fs, path="projects/ds-cma-datasharing/processed/CMME_history.zarr"
+)
+ds = xr.open_zarr(store, consolidated=False)  # lazy — nothing loaded until .compute()
 ```
 
 ## Example queries
@@ -75,7 +83,7 @@ result = ds_clipped["PREC"].compute()
 ```
 adlfs
 xarray
-zarr
+zarr>=3
 rioxarray
 dask
 ```
