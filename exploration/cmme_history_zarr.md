@@ -22,7 +22,7 @@ Monthly mean precipitation forecasts from the CMA CMME model, 1991–2020.
 This store uses **zarr v3 format** (`zarr.json` metadata, not `.zmetadata`). Two things follow from that:
 
 - Use `zarr.storage.FsspecStore` instead of `fs.get_mapper()` — the latter returns a zarr v2-style mapper that zarr v3 doesn't read correctly.
-- Pass `consolidated=False` to `xr.open_zarr` — zarr v3 stores don't have consolidated metadata, so xarray must read each array's metadata individually.
+- Pass `consolidated=False` to `xr.open_zarr` — xarray doesn't yet read zarr v3 consolidated metadata, so it must read each array's metadata individually.
 
 ```python
 import os
