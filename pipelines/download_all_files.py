@@ -28,6 +28,8 @@ logging.basicConfig(
 )
 log_level = os.environ.get("LOG_LEVEL", "INFO").upper()
 logging.getLogger().setLevel(getattr(logging, log_level, logging.INFO))
+logging.getLogger("azure").setLevel(logging.WARNING)
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 # Config
