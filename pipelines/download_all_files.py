@@ -146,7 +146,7 @@ if __name__ == "__main__":
     sftp.close()
     transport.close()
     logger.info(
-        "=== Finished — downloaded: %d, skipped: %d, elapsed: %ds ===",
+        "=== Finished -- downloaded: %d, skipped: %d, elapsed: %ds ===",
         downloaded,
         skipped,
         elapsed,
