@@ -11,8 +11,6 @@ import paramiko
 from azure.storage.blob import BlobServiceClient, ContentSettings
 from cryptography.utils import CryptographyDeprecationWarning
 
-from src.constants import PROJECT_PREFIX
-
 # Suppress deprecation warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -83,7 +81,7 @@ def list_sftp_tree(sftp, path, indent=0):
 
 def download_and_upload_dir(
     sftp, container_client, remote_path, local_dir="temp"
-) -> tuple[int, int]:
+):
     """Returns (downloaded, skipped) counts."""
     os.makedirs(local_dir, exist_ok=True)
     downloaded = 0
@@ -98,7 +96,7 @@ def download_and_upload_dir(
             skipped += sub_sk
         else:
             blob_path = item_path.lstrip("/")
-            full_blob_path = f"{PROJECT_PREFIX}/cma_ftp/{blob_path}"
+            full_blob_path = f"ds-cma-datasharing/cma_ftp/{blob_path}"
             blob_client = container_client.get_blob_client(full_blob_path)
             if blob_client.exists():
                 logger.debug("Skipping existing blob: %s", full_blob_path)
@@ -148,7 +146,7 @@ if __name__ == "__main__":
     sftp.close()
     transport.close()
     logger.info(
-        "=== Finished — downloaded: %d, skipped: %d, elapsed: %ds ===",
+        "=== Finished -- downloaded: %d, skipped: %d, elapsed: %ds ===",
         downloaded,
         skipped,
         elapsed,
