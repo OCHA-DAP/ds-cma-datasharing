@@ -1,0 +1,6 @@
+zarr>=3
+adlfs
+rioxarray
+dask
+scipy
+netcdf4
